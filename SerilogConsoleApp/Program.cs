@@ -10,7 +10,7 @@ namespace SerilogConsoleApp
 {
     internal class Program
     {
-        protected static LoggerConfiguration LogConfiguration =
+        protected static ILogger Log =
             new LoggerConfiguration()
                 // Set logging level
                 .MinimumLevel.Debug()
@@ -21,12 +21,16 @@ namespace SerilogConsoleApp
                 .WriteTo.Sink(new FileSink(@"C:\temp\logs\json-log.txt", new JsonFormatter(), null))
                 
                 // Enrichers
-                .Enrich.FromLogContext();
+                .Enrich.FromLogContext()
+                .CreateLogger();
 
         private static void Main(string[] args)
         {
             // Creates a logger for this specific class
-            var log = LogConfiguration.CreateLogger().ForContext<Program>();
+            var log = Log.ForContext<Program>();
+
+            // Multiple contextual loggers can be created, and these can be nested, e.g.
+            // var txnLog = log.ForContext("TransactionId", currentTransaction.Id);
 
             #region Basic logging
 
